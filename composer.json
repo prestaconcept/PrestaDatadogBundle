@@ -1,0 +1,39 @@
+{
+    "name": "presta/datadog-bundle",
+    "description": "PrestaDatadogBundle is a Symfony bundle leveraging a Monolog handler for Datadog.",
+    "keywords": ["symfony", "monolog", "datadog"],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Benoit Jouhaud",
+            "email": "bjouhaud@prestaconcept.net"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "symfony/http-client": "^5.0|^6.0",
+        "symfony/monolog-bundle": "^3.0",
+        "symfony/security-bundle": "^5.0|^6.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.9",
+        "phpunit/phpunit": "^9.6",
+        "squizlabs/php_codesniffer": "^3.7",
+        "symfony/phpunit-bridge": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Presta\\DatadogBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Presta\\DatadogBundle\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}
