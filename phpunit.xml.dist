@@ -22,6 +22,9 @@
     </testsuites>
 
     <coverage processUncoveredFiles="true">
+        <exclude>
+            <directory>src/DependencyInjection</directory>
+        </exclude>
         <include>
             <directory suffix=".php">src</directory>
         </include>

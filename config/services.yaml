@@ -1,1 +1,11 @@
 services:
+  presta_datadog.handler:
+    class: 'Presta\DatadogBundle\Monolog\Handler\DatadogHandler'
+    arguments:
+      $client: '@http_client'
+      $security: '@security.helper'
+      $env: '%presta_datadog.env%'
+      $apiUrl: '%presta_datadog.api_url%'
+      $apiKey: '%presta_datadog.api_key%'
+      $serviceName: '%presta_datadog.service_name%'
+      $excludedChannels: '%presta_datadog.excluded_channels%'
