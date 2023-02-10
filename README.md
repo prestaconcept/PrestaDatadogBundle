@@ -1,5 +1,9 @@
 # PrestaDatadogBundle
 
+![tests](https://github.com/prestaconcept/PrestaDatadogBundle/actions/workflows/tests.yml/badge.svg)
+![quality](https://github.com/prestaconcept/PrestaDatadogBundle/actions/workflows/quality.yml/badge.svg)
+[![codecov](https://codecov.io/gh/prestaconcept/PrestaDatadogBundle/branch/1.x/graph/badge.svg?token=S8SVUCZYRI)](https://codecov.io/gh/prestaconcept/PrestaDatadogBundle)
+
 The PrestaDatadogBundle provides a [Monolog][1] handler for [Datadog Log Management][2] platform.
 
 It exposes a friendly configuration to help you make your Symfony application communicate with your Datadog instance painlessly. 
