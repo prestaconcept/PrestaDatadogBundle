@@ -45,7 +45,7 @@ when@prod:
         handlers:
             datadog:
                 type: 'service'
-                id: 'Presta\DatadogBundle\Monolog\Handler\DatadogHandler'
+                id: 'presta_datadog.handler'
 ```
 
 How it works?
