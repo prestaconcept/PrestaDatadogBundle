@@ -19,7 +19,7 @@ final class Message implements \ArrayAccess
     public readonly string $service;
     public readonly string $status;
 
-    public function __construct(string $message, Level $level, User|null $user)
+    public function __construct(string $message, Level $level, User|null $user, array $context = [])
     {
         $tags = sprintf(
             "channel:%s,env:%s,level:$level->value,level_name:{$level->getName()}",
@@ -34,7 +34,7 @@ final class Message implements \ArrayAccess
         $this->ddsource = 'php';
         $this->ddtags = $tags;
         $this->hostname = gethostname() ?: null;
-        $this->message = "$message [] []\n";
+        $this->message = "$message " . json_encode($context) . " []\n";
         $this->service = 'app';
         $this->status = $level->getName();
     }

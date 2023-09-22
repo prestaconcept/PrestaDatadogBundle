@@ -12,6 +12,7 @@ final class Record
         public readonly string $channel,
         public readonly Level $level,
         public readonly string $message,
+        public readonly array $context = [],
     ) {
     }
 }

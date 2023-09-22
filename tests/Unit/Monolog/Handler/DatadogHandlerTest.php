@@ -65,7 +65,7 @@ final class DatadogHandlerTest extends TestCase
 
         foreach ($records as $record) {
             $logger = $loggers[$record->channel] ?? new Logger($record->channel, $handlers);
-            $logger->log($record->level, $record->message);
+            $logger->log($record->level, $record->message, $record->context);
 
             $loggers[$record->channel] = $logger;
         }
@@ -122,6 +122,18 @@ final class DatadogHandlerTest extends TestCase
             new ConfigureClientNotCallingRequest($this),
             self::DEFAULT_API_KEY,
             ['deprecation'],
+        ];
+
+        yield "a record of level {$errorLevel->getName()} in a not excluded channel including some context "
+            . 'should submit it\'s context to Datadog' => [
+            [new Record($channel, $errorLevel, self::DEFAULT_MESSAGE, ['foo' => 'bar'])],
+            new ConfigureSecurityCallingGetUser($this, null),
+            new ConfigureClientCallingRequest(
+                $this,
+                [
+                    new Message(self::DEFAULT_MESSAGE, $errorLevel, null, ['foo' => 'bar']),
+                ],
+            ),
         ];
     }
 
