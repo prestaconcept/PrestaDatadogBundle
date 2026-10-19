@@ -8,7 +8,7 @@ use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Level;
 use Monolog\LogRecord;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -38,7 +38,7 @@ final class DatadogHandler extends AbstractProcessingHandler
      */
     public function __construct(
         private readonly HttpClientInterface $client,
-        private readonly Security $security,
+        private readonly TokenStorageInterface $tokenStorage,
         private readonly string $env,
         private readonly string $apiUrl,
         private readonly string $apiKey,
@@ -78,7 +78,7 @@ final class DatadogHandler extends AbstractProcessingHandler
             'level_name' => $record->level->getName(),
         ];
 
-        $user = $this->security->getUser();
+        $user = $this->tokenStorage->getToken()?->getUser();
         if ($user instanceof UserInterface) {
             $tags['user'] = $user->getUserIdentifier();
             $tags['user_type'] = str_replace('App\\Entity\\', '', get_class($user));

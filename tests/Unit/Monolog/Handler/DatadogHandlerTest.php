@@ -11,11 +11,11 @@ use Presta\DatadogBundle\Monolog\Handler\DatadogHandler;
 use Presta\DatadogBundle\Tests\App\Model\User;
 use Presta\DatadogBundle\Tests\App\Monolog\Handler\Configurator\ConfigureClientCallingRequest;
 use Presta\DatadogBundle\Tests\App\Monolog\Handler\Configurator\ConfigureClientNotCallingRequest;
-use Presta\DatadogBundle\Tests\App\Monolog\Handler\Configurator\ConfigureSecurityCallingGetUser;
-use Presta\DatadogBundle\Tests\App\Monolog\Handler\Configurator\ConfigureSecurityNotCallingGetUser;
+use Presta\DatadogBundle\Tests\App\Monolog\Handler\Configurator\ConfigureTokenStorageCallingGetToken;
+use Presta\DatadogBundle\Tests\App\Monolog\Handler\Configurator\ConfigureTokenStorageNotCallingGetToken;
 use Presta\DatadogBundle\Tests\App\Monolog\Handler\Model\Message;
 use Presta\DatadogBundle\Tests\App\Monolog\Handler\Model\Record;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class DatadogHandlerTest extends TestCase
@@ -37,13 +37,13 @@ final class DatadogHandlerTest extends TestCase
      */
     public function testLogging(
         iterable $records,
-        callable $configureSecurity,
+        callable $configureTokenStorage,
         callable $configureClient,
         string $apiKey = self::DEFAULT_API_KEY,
         array $excludedChannels = self::DEFAULT_EXCLUDED_CHANNELS
     ): void {
-        $security = $this->createMock(Security::class);
-        $configureSecurity($security);
+        $tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $configureTokenStorage($tokenStorage);
 
         $client = $this->createMock(HttpClientInterface::class);
         $configureClient($client);
@@ -51,7 +51,7 @@ final class DatadogHandlerTest extends TestCase
         $handlers = [
             new DatadogHandler(
                 $client,
-                $security,
+                $tokenStorage,
                 self::DEFAULT_ENV,
                 self::DEFAULT_API_URL,
                 $apiKey,
@@ -86,7 +86,7 @@ final class DatadogHandlerTest extends TestCase
                 new Record($channel, $debugLevel, '1st message'),
                 new Record($channel, $errorLevel, '2nd message'),
             ],
-            new ConfigureSecurityCallingGetUser($this, null, 2),
+            new ConfigureTokenStorageCallingGetToken($this, null, 2),
             new ConfigureClientCallingRequest(
                 $this,
                 [
@@ -102,7 +102,7 @@ final class DatadogHandlerTest extends TestCase
                 new Record($channel, $errorLevel, '1st message'),
                 new Record($channel, $debugLevel, '2nd message'),
             ],
-            new ConfigureSecurityCallingGetUser($this, null, 2),
+            new ConfigureTokenStorageCallingGetToken($this, null, 2),
             new ConfigureClientCallingRequest(
                 $this,
                 [
@@ -118,7 +118,7 @@ final class DatadogHandlerTest extends TestCase
                 new Record($channel, $debugLevel, '1st message'),
                 new Record('deprecation', $errorLevel, '2nd message'),
             ],
-            new ConfigureSecurityCallingGetUser($this, null),
+            new ConfigureTokenStorageCallingGetToken($this, null),
             new ConfigureClientNotCallingRequest($this),
             self::DEFAULT_API_KEY,
             ['deprecation'],
@@ -127,7 +127,7 @@ final class DatadogHandlerTest extends TestCase
         yield "a record of level {$errorLevel->getName()} in a not excluded channel including some context "
             . 'should submit it\'s context to Datadog' => [
             [new Record($channel, $errorLevel, self::DEFAULT_MESSAGE, ['foo' => 'bar'])],
-            new ConfigureSecurityCallingGetUser($this, null),
+            new ConfigureTokenStorageCallingGetToken($this, null),
             new ConfigureClientCallingRequest(
                 $this,
                 [
@@ -154,13 +154,13 @@ final class DatadogHandlerTest extends TestCase
 
             yield "a single record of level $levelName for an anonymous user should not be sent to Datadog" => [
                 [new Record($channel, $level, $message)],
-                new ConfigureSecurityCallingGetUser($this, null),
+                new ConfigureTokenStorageCallingGetToken($this, null),
                 new ConfigureClientNotCallingRequest($this),
             ];
 
             yield "a single record of level $levelName for an authenticated user should not be sent to Datadog" => [
                 [new Record($channel, $level, $message)],
-                new ConfigureSecurityCallingGetUser($this, $user),
+                new ConfigureTokenStorageCallingGetToken($this, $user),
                 new ConfigureClientNotCallingRequest($this),
             ];
         }
@@ -183,13 +183,13 @@ final class DatadogHandlerTest extends TestCase
 
             yield "a single record of level $levelName for an anonymous user should be sent to Datadog" => [
                 [new Record($channel, $level, $message)],
-                new ConfigureSecurityCallingGetUser($this, null),
+                new ConfigureTokenStorageCallingGetToken($this, null),
                 new ConfigureClientCallingRequest($this, [new Message($message, $level, null)]),
             ];
 
             yield "a single record of level $levelName for an authenticated user should be sent to Datadog" => [
                 [new Record($channel, $level, $message)],
-                new ConfigureSecurityCallingGetUser($this, $user),
+                new ConfigureTokenStorageCallingGetToken($this, $user),
                 new ConfigureClientCallingRequest($this, [new Message($message, $level, $user)]),
             ];
         }
@@ -202,7 +202,7 @@ final class DatadogHandlerTest extends TestCase
     {
         yield "a single record of level {$level->getName()} without api key should not be sent to Datadog" => [
             [new Record($channel, $level, $message)],
-            new ConfigureSecurityNotCallingGetUser($this),
+            new ConfigureTokenStorageNotCallingGetToken($this),
             new ConfigureClientNotCallingRequest($this),
             self::EMPTY_API_KEY,
         ];
@@ -215,7 +215,7 @@ final class DatadogHandlerTest extends TestCase
     {
         yield "a single record of level {$level->getName()} in an excluded channel should not be sent to Datadog" => [
             [new Record($channel, $level, $message)],
-            new ConfigureSecurityNotCallingGetUser($this),
+            new ConfigureTokenStorageNotCallingGetToken($this),
             new ConfigureClientNotCallingRequest($this),
             self::DEFAULT_API_KEY,
             [$channel, md5($channel)],

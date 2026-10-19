@@ -8,6 +8,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class User implements UserInterface
 {
+    /**
+     * @param non-empty-string $userIdentifier
+     */
     public function __construct(private readonly string $userIdentifier = 'john.doe')
     {
     }
