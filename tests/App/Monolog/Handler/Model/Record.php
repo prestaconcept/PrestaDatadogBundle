@@ -8,6 +8,9 @@ use Monolog\Level;
 
 final class Record
 {
+    /**
+     * @param array<mixed> $context
+     */
     public function __construct(
         public readonly string $channel,
         public readonly Level $level,

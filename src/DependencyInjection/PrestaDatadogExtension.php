@@ -13,6 +13,15 @@ final class PrestaDatadogExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
+        /**
+         * @var array{
+         *     env: string,
+         *     api_url: string,
+         *     api_key: string,
+         *     service_name: string,
+         *     excluded_channels: array<string>,
+         * } $mergedConfig
+         */
         $mergedConfig = $this->processConfiguration(new Configuration(), $configs);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));

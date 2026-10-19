@@ -71,6 +71,9 @@ final class DatadogHandlerTest extends TestCase
         }
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public function records(): iterable
     {
         $channel = self::DEFAULT_CHANNEL;

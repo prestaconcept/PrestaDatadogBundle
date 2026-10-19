@@ -10,6 +10,9 @@ use Presta\DatadogBundle\Tests\App\Model\User;
 use Presta\DatadogBundle\Tests\Unit\Monolog\Handler\DatadogHandlerTest;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
+/**
+ * @implements \ArrayAccess<mixed, mixed>
+ */
 final class Message implements \ArrayAccess
 {
     public readonly string $ddsource;
@@ -19,6 +22,9 @@ final class Message implements \ArrayAccess
     public readonly string $service;
     public readonly string $status;
 
+    /**
+     * @param array<mixed> $context
+     */
     public function __construct(string $message, Level $level, User|null $user, array $context = [])
     {
         $tags = sprintf(
